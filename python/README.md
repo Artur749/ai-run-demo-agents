@@ -1,34 +1,82 @@
 # AI Run Demo Agents
 
-This repository contains a collection of AI agents built with different frameworks and architectures, designed to demonstrate various capabilities and integration patterns.
+This repository contains a collection of AI agents built with different frameworks and architectures, designed to demonstrate various capabilities and integration patterns of the [A2A protocol](https://a2a-protocol.org/).
 
 ## Agents
 
-### LangGraph Currency Agent
+Three agents are actively maintained as working demos, each showcasing a different A2A interaction pattern.
 
-**Location:** `/python/agents/currency_converter`
+### 1. LangGraph Currency Agent (`currency_converter`) — complete-response demo
 
-A currency conversion agent built with LangGraph that provides real-time exchange rate information through the A2A protocol.
+**Location:** `/python/agents/currency_converter` · **Port:** 10000
 
-**Key Capabilities:**
-- Currency conversion with real-time exchange rates via Frankfurter API
-- Multi-turn conversations with follow-up questions
-- Real-time streaming with status updates
-- Conversational memory across interactions
-- Structured response format with clear status indicators
+A currency conversion agent built with LangGraph that provides real-time exchange rate information
+via the Frankfurter API. Demonstrates the **complete-response** (`tasks/send`/`tasks/get`) pattern,
+plus multi-turn conversations and an optional streaming path.
 
-**Example Use Cases:**
-- "How much is 100 USD in EUR?"
-- "What's the exchange rate for USD to JPY?"
-- "Convert 50 EUR to GBP"
+- **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
+- **Run:** `uv run .` from `python/agents/currency_converter` (default port 10000).
+- **Check:** `uv run test_client.py` from the same directory.
+
+### 2. Research Agent (`research-agent`) — incremental/streaming demo
+
+**Location:** `/python/agents/research-agent` · **Port:** 10700
+
+A research agent built with LangGraph, showcasing the **incremental/streaming**
+(`tasks/sendSubscribe`) A2A pattern with real-time status updates as the agent works.
+
+- **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
+- **Run:** `uv run .` from `python/agents/research-agent` (default port 10700).
+- **Check:** `uv run test_client.py` from the same directory.
+
+### 3. Text Insights Agent (`text-insights-agent`) — non-streaming, official `a2a-sdk`
+
+**Location:** `/python/agents/text-insights-agent` · **Port:** 10800
+
+A LangGraph ReAct agent with one local, credential-free tool that summarizes sentiment, key points,
+and a suggested next step for a block of free text (e.g. customer feedback or a support ticket).
+Non-streaming only. Unlike the other agents here, it is served using the **official `a2a-sdk` PyPI
+package** rather than this repository's own `common/server`. See [Two A2A
+Implementations](#two-a2a-implementations-by-design) below.
+
+- **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
+- **Run:** `uv run .` from `python/agents/text-insights-agent` (default port 10800).
+- **Check:** `uv run test_client.py` from the same directory.
 
 ## Getting Started
 
-Each agent directory contains its own README with specific setup instructions and examples. To run an agent:
+Each agent directory contains its own README with specific setup instructions and examples. To run an
+agent:
 
-1. Navigate to the agent directory (e.g., `cd python/agents/langgraph`)
-2. Follow the setup instructions in the agent's README
-3. Run the agent using the provided commands
+1. Navigate to the agent directory (e.g., `cd python/agents/research-agent`)
+2. Follow the setup instructions in the agent's README — in short, `cp ../../.env.example .env` and
+   fill in real credentials
+3. Run the agent using `uv run .`
+4. Verify it works with `uv run test_client.py`
+
+## Two A2A Implementations, By Design
+
+This repository intentionally contains two parallel ways of implementing an A2A agent:
+
+- `currency_converter`, `research-agent`, `financial-agent`, and `fun-with-rick` use this repository's
+  own hand-rolled `common/server`, `common/client`, and `common/types` modules.
+- `text-insights-agent` uses the **official `a2a-sdk` PyPI package** directly, isolated entirely to its
+  own package (zero imports from `common/`, zero changes to it).
+
+This split is deliberate, not drift: it lets the repository demonstrate both "build your own A2A
+plumbing" and "use the official SDK" side by side.
+
+## Known Limitations
+
+Two existing agents are untouched and known-broken/incomplete as of this revival work. Fixing either
+was out of scope here.
+
+- **`financial-agent`** (port 10500) fails to install in most environments: it depends on `yfinance`,
+  which pulls in `curl_cffi`, which has no prebuilt wheel for many Python/platform combinations and
+  requires a C++ build toolchain to compile from source.
+- **`fun-with-rick`** (port 10600) has a dead tool reference: its system prompt instructs the model to
+  use a `'tavily_search_tool'` tool, but no such tool is ever registered (`self.tools = []`), and no
+  live Tavily integration exists in the codebase.
 
 ## Contributing
 
