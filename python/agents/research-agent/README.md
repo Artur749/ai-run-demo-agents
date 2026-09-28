@@ -20,14 +20,13 @@ This agent uses LangGraph with OpenAI to provide comprehensive research services
    cd ai-run-demo-agents/python/agents/research-agent
    ```
 
-2. Create an environment file with your API key:
+2. Create an environment file from the shared example, then fill in real values:
 
    ```bash
-   echo "CHAT_MODEL_PROVIDER=azure" > .env
-   echo "AZURE_OPENAI_API_KEY=your_api_key_here" >> .env
-   echo "AZURE_OPENAI_ENDPOINT=your_endpoint_url" >> .env
-   echo "AZURE_OPENAI_API_VERSION=2024-12-01-preview" >> .env
+   cp ../../.env.example .env
    ```
+
+   Edit `.env` and replace the placeholder values with your actual credentials.
 
 3.1. Run the agent:
 

@@ -62,14 +62,13 @@ sequenceDiagram
    cd python/agents/currency_converter
    ```
 
-2. Create an environment file with your API key:
+2. Create an environment file from the shared example, then fill in real values:
 
    ```bash
-   echo "CHAT_MODEL_PROVIDER=azure" > .env
-   echo "AZURE_OPENAI_API_KEY=your_api_key_here" >> .env
-   echo "AZURE_OPENAI_ENDPOINT=your_endpoint_url" >> .env
-   echo "AZURE_OPENAI_API_VERSION=2024-12-01-preview" >> .env
+   cp ../../.env.example .env
    ```
+
+   Edit `.env` and replace the placeholder values with your actual credentials.
 
 3.1. Run the agent:
 
@@ -101,6 +100,24 @@ sequenceDiagram
 - **Checkpoint Memory**: Maintains conversation state between turns
 - **A2A Protocol Integration**: Full compliance with A2A specifications
 - **Azure OpenAI Integration**: Uses gpt-4o model for intelligent responses
+
+## Testing
+
+The test client provides a way to verify the currency agent's A2A protocol implementation
+against a real, running server.
+
+### Prerequisites
+
+- The agent server must be running (see Setup & Running section above)
+- Python 3.13+ installed
+- Required dependencies installed (see Setup section)
+
+### Running Tests
+
+   ```bash
+   # From the currency_converter directory
+   uv run test_client.py
+   ```
 
 ## Limitations
 
