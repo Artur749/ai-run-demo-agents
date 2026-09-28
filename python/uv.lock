@@ -59,6 +59,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/0b/91/087e4281bae91e19c4bb0736dc0807725e2e1f641dcc1ac86e625137c32c/a2a_sdk-1.1.5-py3-none-any.whl", hash = "sha256:c1d63d36b79a097c62dd9be001fce21d5939f5a811a9c5afd0ba8082f13f68bf", size = 255110, upload-time = "2026-09-21T09:52:24.741Z" },
 ]
 
+[package.optional-dependencies]
+http-server = [
+    { name = "sse-starlette" },
+    { name = "starlette" },
+]
+
 [[package]]
 name = "ai-run-demo-agents"
 version = "0.1.0"
@@ -1523,7 +1529,7 @@ name = "text-insights-agent"
 version = "0.1.0"
 source = { editable = "agents/text-insights-agent" }
 dependencies = [
-    { name = "a2a-sdk" },
+    { name = "a2a-sdk", extra = ["http-server"] },
     { name = "click" },
     { name = "langchain-openai" },
     { name = "langgraph" },
@@ -1534,7 +1540,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-sdk", specifier = ">=1.1.5" },
+    { name = "a2a-sdk", extras = ["http-server"], specifier = ">=1.1.5" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "langchain-openai", specifier = ">=0.2.14" },
     { name = "langgraph", specifier = ">=0.4.1" },
