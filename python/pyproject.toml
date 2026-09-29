@@ -23,6 +23,18 @@ dependencies = [
 [tool.hatch.build.targets.wheel]
 packages = ["common", "hosts"]
 
+[tool.pytest.ini_options]
+# This repo has no pytest-based test suite today — only per-agent manual A2A
+# smoke scripts (agents/*/test_client.py), each meant to be run standalone as
+# `uv run test_client.py` from its own agent directory/uv environment (see each
+# agent's README). Without this, root-level `uv run pytest` auto-discovers
+# those scripts by their test_*.py naming and fails to collect them, since
+# they import `common`/`a2a` packages that only exist in each agent's own
+# isolated workspace-member environment, not the root one. Ignore them by
+# glob so default discovery collects nothing until a real pytest suite is
+# added under a dedicated tests/ directory.
+addopts = "--ignore-glob=agents/*/test_client.py"
+
 [tool.uv.workspace]
 members = [
     "agents/currency_converter",
