@@ -4,7 +4,14 @@ This repository contains a collection of AI agents built with different framewor
 
 ## Agents
 
-Three agents are actively maintained as working demos, each showcasing a different A2A interaction pattern.
+Four agents are actively maintained as working demos, each showcasing a different A2A interaction pattern.
+
+| Agent                  | Response mode           | Implementation         |
+|-------------------------|--------------------------|-------------------------|
+| `currency_converter`   | Complete-response        | Hand-rolled `common/`  |
+| `research-agent`       | Incremental/streaming    | Hand-rolled `common/`  |
+| `text-insights-agent`  | Complete-response         | Official `a2a-sdk`     |
+| `howto-guide-agent`    | Incremental/streaming     | Official `a2a-sdk`     |
 
 ### 1. LangGraph Currency Agent (`currency_converter`) — complete-response demo
 
@@ -49,6 +56,21 @@ Implementations](#two-a2a-implementations-by-design) below.
 - **Run:** `uv run .` from `python/agents/text-insights-agent` (default port 10800).
 - **Check:** `uv run test_client.py` from the same directory.
 
+### 4. How-To Guide Agent (`howto-guide-agent`) — incremental/streaming, official `a2a-sdk`
+
+**Location:** `/python/agents/howto-guide-agent` · **Port:** 10900
+
+Decomposes a free-text goal into an ordered, concrete step-by-step guide, streaming one event per
+step followed by a compiled guide and a completion status. This is `text-insights-agent`'s
+**streaming counterpart** on the same official `a2a-sdk` package. See [Two A2A
+Implementations](#two-a2a-implementations-by-design) below.
+
+- **Prerequisites:** Python 3.13+, [UV](https://docs.astral.sh/uv/), and an LLM credential (Azure
+  OpenAI or OpenAI — see `python/.env.example`).
+- **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
+- **Run:** `uv run .` from `python/agents/howto-guide-agent` (default port 10900).
+- **Check:** `uv run test_client.py` from the same directory.
+
 ## Getting Started
 
 Each agent directory contains its own README with specific setup instructions and examples. To run an
@@ -66,8 +88,8 @@ This repository intentionally contains two parallel ways of implementing an A2A 
 
 - `currency_converter`, `research-agent`, `financial-agent`, and `fun-with-rick` use this repository's
   own hand-rolled `common/server`, `common/client`, and `common/types` modules.
-- `text-insights-agent` uses the **official `a2a-sdk` PyPI package** directly, isolated entirely to its
-  own package (zero imports from `common/`, zero changes to it).
+- `text-insights-agent` and `howto-guide-agent` use the **official `a2a-sdk` PyPI package** directly,
+  each isolated entirely to its own package (zero imports from `common/`, zero changes to it).
 
 This split is deliberate, not drift: it lets the repository demonstrate both "build your own A2A
 plumbing" and "use the official SDK" side by side.
