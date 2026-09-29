@@ -32,8 +32,12 @@ packages = ["common", "hosts"]
 # they import `common`/`a2a` packages that only exist in each agent's own
 # isolated workspace-member environment, not the root one. Ignore them by
 # glob so default discovery collects nothing until a real pytest suite is
-# added under a dedicated tests/ directory.
-addopts = "--ignore-glob=agents/*/test_client.py"
+# added under a dedicated tests/ directory. With 0 tests legitimately
+# collected, plain pytest would exit 5 ("no tests collected"); the
+# pytest-custom-exit-code plugin's --suppress-no-test-exit-code makes that
+# exit 0 instead, since having no pytest suite is intentional here, not a
+# failure.
+addopts = "--ignore-glob=agents/*/test_client.py --suppress-no-test-exit-code"
 
 [tool.uv.workspace]
 members = [
@@ -47,3 +51,8 @@ members = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest-custom-exit-code>=0.3.0",
+]
