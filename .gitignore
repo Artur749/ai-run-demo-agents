@@ -4,3 +4,11 @@ __pycache__
 .env
 .venv
 .venv*
+
+# AI
+.ai-run/sdlc-factory/
+.ai-run/runs/
+.agents/memory/sdlc/daily/
+docs/superpowers/tasks/*/**/*.local.*
+docs/superpowers/qa-tasks/*/**/*.local.*
+.claude/settings.local.json
