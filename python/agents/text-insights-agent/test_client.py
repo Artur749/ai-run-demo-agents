@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import sys
 
 import httpx
@@ -44,7 +45,10 @@ async def main() -> None:
             )
             print(f'OK (empty input handled): {empty}')
         finally:
-            await client.close()
+            # A close()-time failure must never mask a real assertion failure raised
+            # inside the try block above.
+            with contextlib.suppress(Exception):
+                await client.close()
 
 
 if __name__ == '__main__':

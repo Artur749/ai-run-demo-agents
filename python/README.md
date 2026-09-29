@@ -14,6 +14,8 @@ A currency conversion agent built with LangGraph that provides real-time exchang
 via the Frankfurter API. Demonstrates the **complete-response** (`tasks/send`/`tasks/get`) pattern,
 plus multi-turn conversations and an optional streaming path.
 
+- **Prerequisites:** Python 3.13+, [UV](https://docs.astral.sh/uv/), and an LLM credential (Azure
+  OpenAI or OpenAI — see `python/.env.example`).
 - **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
 - **Run:** `uv run .` from `python/agents/currency_converter` (default port 10000).
 - **Check:** `uv run test_client.py` from the same directory.
@@ -25,6 +27,8 @@ plus multi-turn conversations and an optional streaming path.
 A research agent built with LangGraph, showcasing the **incremental/streaming**
 (`tasks/sendSubscribe`) A2A pattern with real-time status updates as the agent works.
 
+- **Prerequisites:** Python 3.13+, [UV](https://docs.astral.sh/uv/), and an LLM credential (Azure
+  OpenAI or OpenAI — see `python/.env.example`).
 - **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
 - **Run:** `uv run .` from `python/agents/research-agent` (default port 10700).
 - **Check:** `uv run test_client.py` from the same directory.
@@ -39,6 +43,8 @@ Non-streaming only. Unlike the other agents here, it is served using the **offic
 package** rather than this repository's own `common/server`. See [Two A2A
 Implementations](#two-a2a-implementations-by-design) below.
 
+- **Prerequisites:** Python 3.13+, [UV](https://docs.astral.sh/uv/), and an LLM credential (Azure
+  OpenAI or OpenAI — see `python/.env.example`).
 - **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
 - **Run:** `uv run .` from `python/agents/text-insights-agent` (default port 10800).
 - **Check:** `uv run test_client.py` from the same directory.

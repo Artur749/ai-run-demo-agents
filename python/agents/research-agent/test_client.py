@@ -10,7 +10,6 @@ from common.types import (
     SendTaskStreamingResponse,
     GetTaskResponse,
     Task,
-    TaskArtifactUpdateEvent,
     TaskState,
     TaskStatusUpdateEvent,
     Message,
@@ -111,14 +110,15 @@ async def run_streaming_test(client: A2AClient) -> None:
 
     final_chunk = chunks[-1]
     result = final_chunk.result
+    assert isinstance(result, TaskStatusUpdateEvent), (
+        f'expected the final streaming chunk to carry a terminal task status, got {type(result)}'
+    )
+    assert result.final, 'expected the final streaming chunk to be marked final'
+    assert result.status.state in (TaskState.COMPLETED, TaskState.INPUT_REQUIRED), (
+        f'unexpected terminal task state: {result.status.state}'
+    )
     text = ''
-    if isinstance(result, TaskArtifactUpdateEvent):
-        text = ''.join(
-            part.text
-            for part in result.artifact.parts
-            if isinstance(part, TextPart)
-        ).strip()
-    elif isinstance(result, TaskStatusUpdateEvent) and result.status.message:
+    if result.status.message:
         text = ''.join(
             part.text
             for part in result.status.message.parts

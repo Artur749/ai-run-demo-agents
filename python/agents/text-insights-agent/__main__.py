@@ -12,6 +12,7 @@ from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.routes import create_agent_card_routes, create_jsonrpc_routes
 from a2a.server.tasks import InMemoryTaskStore
 from a2a.types import AgentCapabilities, AgentCard, AgentInterface, AgentSkill
+from a2a.utils.errors import UnsupportedOperationError
 
 from agent import TextInsightsAgent
 
@@ -35,7 +36,10 @@ class TextInsightsExecutor(AgentExecutor):
         await event_queue.enqueue_event(new_text_message(summary))
 
     async def cancel(self, context: RequestContext, event_queue: EventQueue) -> None:
-        raise NotImplementedError('Cancellation is not supported.')
+        # Raising the SDK's own A2AError subclass lets the JSON-RPC dispatcher map this
+        # to its documented "unsupported operation" error code instead of a generic
+        # Internal Server Error.
+        raise UnsupportedOperationError(message='Cancellation is not supported by this agent.')
 
 
 @click.command()
