@@ -46,6 +46,7 @@ members = [
     "agents/financial-agent",
     "agents/research-agent",
     "agents/text-insights-agent",
+    "agents/howto-guide-agent",
 ]
 
 [build-system]
