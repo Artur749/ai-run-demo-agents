@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "task": "Revive ai-run-demo-agents to a working state and verify/document two demo agents (one streaming, one complete-response) that run independently without CodeMie.",
+  "generated": "2026-09-28T00:00:00Z",
+  "dimensions": {
+    "component_scope":      { "score": 4, "label": "L" },
+    "requirements_clarity": { "score": 4, "label": "L" },
+    "technical_risk":       { "score": 3, "label": "M" },
+    "file_change_estimate": { "score": 3, "label": "M" },
+    "dependencies":         { "score": 2, "label": "S" },
+    "affected_layers":      { "score": 3, "label": "M" }
+  },
+  "total": 19,
+  "size": "M",
+  "size_legend": {
+    "XS": "6-9 — < half day — plan directly",
+    "S": "10-14 — 1 day — plan directly",
+    "M": "15-20 — 2-3 days — brainstorm first",
+    "L": "21-26 — 4-5 days — brainstorm first",
+    "XL": "27-31 — > 1 sprint — recommend splitting",
+    "XXL": "32-36 — > 1 sprint — must split"
+  },
+  "routing": "brainstorming",
+  "key_reasoning": [
+    { "dimension": "component_scope", "reason": "Work spans multiple independent agent packages (choosing/repairing among currency_converter, financial-agent, fun-with-rick, research-agent), root README, and per-agent docs/config — no single component owns the task. Bumped from M to L: the change affects multiple agents/workflows (red flag)." },
+    { "dimension": "requirements_clarity", "reason": "Core ask is defined (two agents, one streaming + one complete, basic checks, docs), but several design decisions are open: which two agents to designate as the demo pair given financial-agent is currently broken (yfinance→curl_cffi native build failure) and fun-with-rick has a dead tavily tool reference; how 'verifiable without CodeMie' is satisfied given every agent needs a real LLM credential; whether to fix the native dependency or route around it." },
+    { "dimension": "technical_risk", "reason": "Closest existing pattern is strong — every agent's agent.py already implements both invoke() (complete) and stream() (incremental), and research-agent/test_client.py is a reusable template for the 'basic checks' criterion — so most of the work is copy-and-verify, not new architecture. Kept at M rather than bumped: no security/auth/schema work, and the one real risk (financial-agent's native-build failure) is avoidable by choosing already-working agents (currency_converter, research-agent) rather than a hard blocker to route around." },
+    { "dimension": "affected_layers", "reason": "Touches agent/reasoning layer (verification only), transport/protocol layer (verification only), packaging/config (fixing or avoiding the financial-agent dependency break, possibly adding .env.example), and documentation (stale root README, per-agent README gaps) — a standard 2-3 layer path with no schema or new external integration." }
+  ],
+  "red_flags_applied": [
+    "Component Scope bumped from M to L: task affects multiple agents/workflows (choice among 4 candidate agent packages plus root-level docs/config, not one self-contained component)."
+  ],
+  "split_recommendation": null
+}

@@ -1,0 +1,47 @@
+{
+  "CR-001": {
+    "file": "python/README.md",
+    "fix": "Added a 'Prerequisites' bullet (Python 3.13+, UV, LLM credential) to each of the three numbered agent sections.",
+    "evidence": "Manual review of the three edited sections in python/README.md; matches the Prerequisites already documented in each agent's own README."
+  },
+  "CR-002": {
+    "file": "python/agents/research-agent/test_client.py",
+    "fix": "run_streaming_test now asserts the final chunk is a TaskStatusUpdateEvent, is marked final=True, and its status.state is in (COMPLETED, INPUT_REQUIRED) before checking text content.",
+    "evidence": "uv run test_client.py from python/agents/research-agent against a down agent still exits 1 (no regression, connection error path unaffected). Terminal-state assertion verified by code inspection: TaskState.FAILED is no longer in the accepted set, so a failed stream with non-empty message now fails the check."
+  },
+  "CR-003": {
+    "file": "python/agents/text-insights-agent/.dockerignore",
+    "fix": "Added .dockerignore containing .env and .venv, matching currency_converter/research-agent/financial-agent/fun-with-rick.",
+    "evidence": "File created; content diffed identical to python/agents/currency_converter/.dockerignore and python/agents/research-agent/.dockerignore."
+  },
+  "CR-004": {
+    "file": "python/agents/text-insights-agent/__main__.py",
+    "fix": "TextInsightsExecutor.cancel() now raises a2a.utils.errors.UnsupportedOperationError instead of NotImplementedError.",
+    "evidence": "Confirmed a2a.utils.errors.JSON_RPC_ERROR_CODE_MAP maps UnsupportedOperationError to -32004 (vs InternalError at -32603). Directly invoked TextInsightsExecutor().cancel(None, None) and confirmed it raises UnsupportedOperationError with message 'Cancellation is not supported by this agent.' A live end-to-end tasks/cancel HTTP call was not reachable (this agent completes execute() synchronously with no window in which a task is 'active' to cancel; a cancel against a never-registered task id is correctly rejected earlier as TaskNotFoundError by the SDK's own active-task registry, before reaching this agent's cancel())."
+  },
+  "CR-005": {
+    "file": "python/agents/text-insights-agent/agent.py",
+    "fix": "_create_chat_model normalizes CHAT_MODEL_PROVIDER via .strip().lower() and validates it against an explicit {'azure', 'openai'} set, raising ValueError on anything else.",
+    "evidence": "Directly exercised: CHAT_MODEL_PROVIDER='Azur' raises ValueError listing supported providers; CHAT_MODEL_PROVIDER='  Azure  ' normalizes and constructs AzureChatOpenAI successfully."
+  },
+  "CR-006": {
+    "file": "python/agents/text-insights-agent/agent.py",
+    "fix": "AZURE_OPENAI_API_KEY added to the same required-vars guard as AZURE_OPENAI_ENDPOINT/AZURE_OPENAI_API_VERSION.",
+    "evidence": "Directly exercised: unsetting AZURE_OPENAI_API_KEY with the other two vars present raises the same clear ValueError naming all three required vars."
+  },
+  "CR-007": {
+    "file": "python/agents/text-insights-agent/agent.py",
+    "fix": "InsightsResponse gets a model_validator(mode='after') enforcing 2-4 key_points when status=='completed'; status=='error' is exempt so the existing empty-input/LLM-failure paths still construct successfully.",
+    "evidence": "Directly exercised: InsightsResponse(status='error', key_points=[], ...) still constructs; InsightsResponse(status='completed', key_points=[], ...) and key_points with 5 items both raise pydantic ValidationError; InsightsResponse(status='completed', key_points=['a','b'], ...) constructs successfully."
+  },
+  "CR-008": {
+    "file": "python/agents/text-insights-agent/agent.py",
+    "fix": "invoke()'s except branch now calls logger.exception(...) server-side and returns a fixed generic suggested_next_step instead of f'Unable to analyze text: {exc}'.",
+    "evidence": "Ran test_client.py end-to-end against a locally running server with a fake Azure endpoint (real LLM call fails with a connection error): the real-input response's suggested_next_step is now the generic 'Unable to analyze text right now; please try again later.' with no endpoint/auth error text, versus the prior round's leaked 'Unable to analyze text: Connection error.'"
+  },
+  "CR-009": {
+    "file": "python/agents/text-insights-agent/test_client.py",
+    "fix": "send_text's finally block wraps client.close() in contextlib.suppress(Exception) so a close-time failure cannot replace a real assertion failure raised inside the try block.",
+    "evidence": "Code inspection; the try block's AssertionError now propagates unconditionally since close() failures are swallowed rather than re-raised over it."
+  }
+}

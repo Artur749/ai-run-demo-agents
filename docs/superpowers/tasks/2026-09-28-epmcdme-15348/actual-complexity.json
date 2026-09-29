@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "generated": "2026-09-29T00:00:00Z",
+  "dimensions": {
+    "component_scope":      { "score": 5, "label": "XL" },
+    "requirements_clarity": { "score": 2, "label": "S" },
+    "technical_risk":       { "score": 3, "label": "M" },
+    "file_change_estimate": { "score": 6, "label": "XXL" },
+    "dependencies":         { "score": 2, "label": "S" },
+    "affected_layers":      { "score": 4, "label": "L" }
+  },
+  "total": 22,
+  "size": "L",
+  "band_range": "21-26",
+  "files_changed": 25,
+  "routing": "brainstorming",
+  "key_reasoning": [
+    { "dimension": "component_scope", "reason": "Two new standalone agent services (howto-guide-agent, text-insights-agent — each with agent.py, __main__.py, Dockerfile, pyproject.toml, test_client.py, README) were added, plus consistency edits landed in two pre-existing agents (currency_converter, research-agent) and the root workspace files (python/pyproject.toml, python/README.md, python/.env.example, python/uv.lock). Red flag applied: touching multiple existing agents alongside two brand-new ones." },
+    { "dimension": "file_change_estimate", "reason": "diffstat reports 25 files changed (3423 insertions, 635 deletions), which maps to the 16+ / XXL band mechanically." },
+    { "dimension": "affected_layers", "reason": "API layer (AgentCard + JSONRPC routes via DefaultRequestHandler), Service layer (LangGraph/structured-output agent logic in agent.py), Infrastructure (new per-agent Dockerfile + uv workspace membership), and External (Azure OpenAI / OpenAI chat completions) are all touched; no DB/persistence layer or schema migration is involved." }
+  ],
+  "red_flags_applied": [
+    "Real-time/Streaming requirement in howto-guide-agent (capabilities=AgentCapabilities(streaming=True), incremental artifact/status events) bumped Technical Risk from S to M.",
+    "Change affects multiple agents (2 new + edits to 2 existing: currency_converter, research-agent) bumped Component Scope from L to XL."
+  ],
+  "split_recommendation": null
+}

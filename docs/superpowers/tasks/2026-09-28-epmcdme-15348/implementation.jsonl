@@ -1,0 +1,12 @@
+{"task_id":"task-1","status":"done","commit":"c346492","test_command":"n/a - static config"}
+{"task_id":"task-2","status":"done","commit":"3298b17","test_command":"uv run test_client.py (from python/agents/research-agent, confirmed non-zero exit against down agent; happy path needs live Azure OpenAI creds not available in this env)"}
+{"task_id":"task-3","status":"done","commit":"6274413","test_command":"uv run test_client.py (from python/agents/currency_converter, confirmed non-zero exit against down agent; happy path needs live Azure OpenAI creds not available in this env)"}
+{"task_id":"task-4","status":"done","commit":"536cce9","test_command":"n/a - documentation only"}
+{"task_id":"task-5","status":"done","commit":"4409f4a","test_command":"uv sync (from python/, resolved 106 packages incl. new text-insights-agent member)"}
+{"task_id":"task-6","status":"done","commit":"4bc85ff","test_command":"uv run test_client.py (from python/agents/text-insights-agent, verified GREEN end-to-end against a locally running server with placeholder Azure creds; RED confirmed first against no server)"}
+{"task_id":"task-7","status":"done","commit":"3d8933a","test_command":"n/a - documentation only"}
+{"task_id":"task-8","status":"done","commit":"7f3c93c","test_command":"n/a - documentation only"}
+{"task_id":"task-9","status":"done","commit":"656e0e9","test_command":"uv sync (from python/ and from python/agents/howto-guide-agent; both resolve cleanly, a2a-sdk[http-server] 1.1.5 present, no langgraph)"}
+{"task_id":"task-10","status":"done","commit":"96b0a9d","test_command":"uv run test_client.py (from python/agents/howto-guide-agent; RED confirmed first; GREEN verified end-to-end via a temporary monkeypatched local launcher, 7 incremental events; down-agent exit non-zero confirmed)"}
+{"task_id":"task-11","status":"done","commit":"7f9b6d5","test_command":"n/a - documentation only"}
+{"task_id":"task-12","status":"done","commit":"70cf3b8","test_command":"n/a - documentation only"}

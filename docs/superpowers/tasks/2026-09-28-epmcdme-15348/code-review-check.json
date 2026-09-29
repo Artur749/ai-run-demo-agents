@@ -1,0 +1,44 @@
+{
+  "decision": "approve",
+  "rationale": "Targeted check-round verification of the sole prior blocking finding (CR-001, httpx dependency) confirms it resolved: text-insights-agent/pyproject.toml's dependencies array now includes \"httpx>=0.28.1\", and python/uv.lock's text-insights-agent package block and [package.metadata] requires-dist both list httpx with the matching >=0.28.1 specifier, so the dependency is now declared explicitly rather than relying solely on a2a-sdk/langchain-openai's transitive pull. No blocking finding was left unaccounted for and this targeted round discovers no new findings. business_review and standards_review are carried forward unchanged from the prior verdict (standards audit not expected for this profile, no coverage gap). Decision moves to approve at high confidence.",
+  "confidence": "high",
+  "risk_flags": [],
+  "business_review": [
+    { "kind": "story-ac", "item": "AC1: Root README documents uv run startup for currency_converter and research-agent", "status": "pass", "notes": "python/README.md Setup/Run/Check sections for both agents plus python/.env.example" },
+    { "kind": "story-ac", "item": "AC2: Both test_client.py scripts send a real input to a live agent and assert a meaningful result", "status": "pass", "notes": "currency_converter asserts non-empty text + digit; research-agent asserts non-empty text" },
+    { "kind": "story-ac", "item": "AC3: README states research-agent=incremental/streaming, currency_converter=complete-response, matching each test script", "status": "pass", "notes": "README headers match; currency_converter test single-turn only, research-agent covers streaming" },
+    { "kind": "story-ac", "item": "AC4: Both scripts fail on non-meaningful result, run purely local, no CodeMie", "status": "pass", "notes": "both sys.exit(1) on AssertionError/Exception; AGENT_URL is localhost in both" },
+    { "kind": "story-ac", "item": "AC5: python/.env.example and README snippets contain only placeholder values", "status": "pass", "notes": ".env.example uses your_api_key_here style placeholders; README only references cp .env.example" },
+    { "kind": "story-ac", "item": "AC6: Root README gives per-agent prerequisites, .env setup, start command, check instructions", "status": "pass", "notes": "Verified: python/README.md has an explicit Prerequisites bullet in all four agent sections; lens claim of a missing bullet is false" },
+    { "kind": "story-ac", "item": "AC7: text-insights-agent pyproject declares a2a-sdk floor version; code built on real package classes, not common/", "status": "pass", "notes": "Verified: a2a.helpers exports new_text_message/get_stream_response_text in installed a2a-sdk 1.1.5; all __main__.py imports resolve" },
+    { "kind": "story-ac", "item": "AC8: text-insights-agent accepts input, runs local-stats+LLM logic, returns meaningful result", "status": "pass", "notes": "Verified: all a2a.* imports in __main__.py resolve against installed a2a-sdk 1.1.5; server can start" },
+    { "kind": "story-ac", "item": "AC9: text-insights-agent test_client.py runs locally, asserts valid agent card and meaningful result", "status": "pass", "notes": "Verified: a2a.helpers imports in test_client.py resolve correctly; script reaches its assertions" },
+    { "kind": "spec", "item": "No CodeMie credential, API call, or registration step for any of the three new agents", "status": "pass", "notes": "no occurrence of 'codemie' anywhere in the diff" },
+    { "kind": "spec", "item": "a2a-sdk usage isolated to text-insights-agent's own package; common/ and other agents left unchanged", "status": "pass", "notes": "no common/ paths changed; currency_converter/research-agent changes are README/test_client only" },
+    { "kind": "spec", "item": "Agent 3 implements non-streaming task-submission only, no incremental support", "status": "pass", "notes": "AgentCapabilities(streaming=False); README states non-streaming only" },
+    { "kind": "spec", "item": "pyproject.toml declares a2a-sdk as a floor constraint, not a hand-typed exact/latest version", "status": "pass", "notes": "\"a2a-sdk[http-server]>=1.1.5\"; uv.lock resolves 1.1.5, consistent with the floor" },
+    { "kind": "spec", "item": "Agent 3 requires only the same class of LLM credential as agents 1/2, no new credential type", "status": "pass", "notes": "_create_chat_model reads CHAT_MODEL_PROVIDER/CHAT_MODEL/AZURE_OPENAI_* matching python/.env.example" }
+  ],
+  "standards_review": [
+    { "kind": "commit-format", "status": "na", "notes": "standards review not run this round (standards_expected: false)" },
+    { "kind": "code-quality", "status": "na", "notes": "standards review not run this round (standards_expected: false)" },
+    { "kind": "security", "status": "na", "notes": "standards review not run this round (standards_expected: false)" }
+  ],
+  "findings": [
+    {
+      "id": "CR-001",
+      "kind": "code",
+      "severity": "major",
+      "triage": "patch",
+      "file": "python/agents/text-insights-agent/pyproject.toml",
+      "line": 7,
+      "title": "httpx used but not declared as dependency",
+      "problem": "test_client.py does `import httpx` directly and uses `httpx.AsyncClient`, but pyproject.toml's `dependencies` array does not list httpx; it is available only because a2a-sdk/langchain-openai currently pull it in transitively.",
+      "impact": "If a future a2a-sdk or langchain-openai version stops depending on httpx, `uv run test_client.py` breaks with ImportError even though httpx is used directly here; the two sibling agents (research-agent, currency_converter) both declare `httpx>=0.28.1` explicitly, so this is also inconsistent with the repo's own established convention.",
+      "recommendation": "Add \"httpx>=0.28.1\" to text-insights-agent/pyproject.toml's dependencies array, matching research-agent and currency_converter."
+    }
+  ],
+  "finding_status": [
+    { "id": "CR-001", "status": "resolved", "notes": "pyproject.toml dependencies now include \"httpx>=0.28.1\"; python/uv.lock's text-insights-agent package block and requires-dist both list httpx with the matching >=0.28.1 specifier, consistent with research-agent and currency_converter." }
+  ]
+}

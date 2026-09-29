@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "branch": "EPMCDME-15348_Revive-the-demo-agents-repository-and-create-test-agents",
+  "head": "23becbdbe8fa778cd6b2195934768689c3e4df38",
+  "runner": "uv",
+  "started_at": "2026-09-29T13:06:30Z",
+  "completed_at": "2026-09-29T13:10:23Z",
+  "status": "PASSED",
+  "drift_detected": false,
+  "gates": [
+    {
+      "id": "lint",
+      "source": "guide",
+      "status": "SKIPPED",
+      "duration_ms": 648,
+      "command": "cd python && uv run ruff check",
+      "exit_code": 2,
+      "notes": "Self-skip: \"error: Failed to spawn: `ruff` / Caused by: program not found\" — ruff is not a declared dependency of python/pyproject.toml or python/uv.lock and no ruff binary is on PATH. Add ruff to the uv project (e.g. `uv add --dev ruff`) to enable this gate locally."
+    },
+    {
+      "id": "build",
+      "source": "guide",
+      "status": "PASS",
+      "duration_ms": 44310,
+      "command": "cd python && uv run python -m compileall .",
+      "exit_code": 0
+    },
+    {
+      "id": "unit",
+      "source": "guide",
+      "status": "SKIPPED",
+      "duration_ms": 3754,
+      "command": "cd python && uv run pytest",
+      "exit_code": 0,
+      "notes": "Self-skip: \"collected 0 items\" / \"no tests ran in 0.04s\" — exit 0 only because python/pyproject.toml sets addopts = \"--ignore-glob=agents/*/test_client.py --suppress-no-test-exit-code\", which intentionally maps pytest's normal 'no tests collected' exit code (5) to 0. This repo has no pytest-based test suite under python/ yet (only manual per-agent A2A smoke scripts named test_client.py, excluded by that same glob). Add a real pytest suite (e.g. under python/tests/) to enable this gate locally."
+    }
+  ],
+  "failures": {}
+}
