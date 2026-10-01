@@ -12,7 +12,7 @@ The agent makes a single structured-output LLM call (`.with_structured_output()`
 graph or tool) that decomposes the user's goal into 3-8 ordered, concrete steps plus a one-sentence
 summary. Unlike `text-insights-agent`'s single complete response, that result is then **streamed** to
 the client as a sequence of discrete `a2a-sdk` events: one `TaskArtifactUpdateEvent` per step, a final
-compiled-guide artifact combining the summary and the full numbered list, and a
+`guide` artifact holding only the one-sentence summary (the steps are not repeated), and a
 `TaskState.TASK_STATE_COMPLETED` status event. The step list itself is produced by one LLM call and
 then emitted incrementally — it is not generated one step at a time live.
 

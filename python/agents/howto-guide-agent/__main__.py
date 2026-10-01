@@ -46,9 +46,8 @@ class HowToGuideExecutor(AgentExecutor):
                 artifact_id=f'step-{i}', append=False, last_chunk=True,
             ))
 
-        numbered = '\n'.join(f'{i}. {s}' for i, s in enumerate(result.steps, start=1))
         await event_queue.enqueue_event(new_text_artifact_update_event(
-            task.id, task.context_id, name='guide', text=f'{result.summary}\n\n{numbered}',
+            task.id, task.context_id, name='guide', text=result.summary,
             artifact_id='guide', append=False, last_chunk=True,
         ))
         await event_queue.enqueue_event(new_text_status_update_event(
