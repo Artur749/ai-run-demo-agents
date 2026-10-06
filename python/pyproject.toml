@@ -47,6 +47,7 @@ members = [
     "agents/research-agent",
     "agents/text-insights-agent",
     "agents/howto-guide-agent",
+    "agents/codemie-caller-agent",
 ]
 
 [build-system]
