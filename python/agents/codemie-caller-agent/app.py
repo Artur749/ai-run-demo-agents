@@ -2,6 +2,7 @@ import logging
 from typing import Any
 
 from starlette.applications import Starlette
+from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
@@ -122,5 +123,11 @@ def create_app(
         *create_jsonrpc_routes(handler, rpc_url="/"),
     ]
     app = Starlette(routes=routes)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["Content-Type", "A2A-Version", "Authorization"],
+    )
     app.state.agent = agent
     return app
