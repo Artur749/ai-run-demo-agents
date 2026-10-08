@@ -6,12 +6,13 @@ This repository contains a collection of AI agents built with different framewor
 
 Four agents are actively maintained as working demos, each showcasing a different A2A interaction pattern.
 
-| Agent                  | Response mode           | Implementation         |
-|-------------------------|--------------------------|-------------------------|
-| `currency_converter`   | Complete-response        | Hand-rolled `common/`  |
-| `research-agent`       | Incremental/streaming    | Hand-rolled `common/`  |
-| `text-insights-agent`  | Complete-response         | Official `a2a-sdk`     |
-| `howto-guide-agent`    | Incremental/streaming     | Official `a2a-sdk`     |
+| Agent                    | Response mode          | Implementation       |
+|--------------------------|------------------------|----------------------|
+| `currency_converter`     | Complete-response      | Hand-rolled `common/` |
+| `research-agent`         | Incremental/streaming  | Hand-rolled `common/` |
+| `text-insights-agent`    | Complete-response      | Official `a2a-sdk`   |
+| `howto-guide-agent`      | Incremental/streaming  | Official `a2a-sdk`   |
+| `codemie-caller-agent`   | Complete-response      | Official `a2a-sdk`   |
 
 ### 1. LangGraph Currency Agent (`currency_converter`) — complete-response demo
 
@@ -55,6 +56,24 @@ Implementations](#two-a2a-implementations-by-design) below.
 - **Setup:** `cp ../../.env.example .env` from the agent directory, then fill in real credentials.
 - **Run:** `uv run .` from `python/agents/text-insights-agent` (default port 10800).
 - **Check:** `uv run test_client.py` from the same directory.
+
+### 5. CodeMie Caller Agent (`codemie-caller-agent`) — multi-hop demo, official `a2a-sdk`
+
+**Location:** `/python/agents/codemie-caller-agent` · **Port:** 11000
+
+A proxy agent with no LLM of its own. It accepts a user message via A2A `SendMessage` (or via a
+plain HTTP `/demo/chat` endpoint for demo UIs), forwards it to a configured CodeMie assistant via
+**A2A v1.0**, and returns the response together with a 4-step wire trace that makes every protocol
+hop visible. Designed for the multi-hop demo scenario: external client → this agent → CodeMie (via
+A2A) → CodeMie assistant.
+
+Unlike the other agents, no LLM credentials are needed — only CodeMie instance credentials
+(`CM_BASE_URL`, `CM_ASSISTANT_ID`, `CM_AUTH_TOKEN`).
+
+- **Prerequisites:** Python 3.13+, [UV](https://docs.astral.sh/uv/), and a running CodeMie instance.
+- **Setup:** `cp .env.example .env` from the agent directory, then fill in real credentials.
+- **Run:** `uv run .` from `python/agents/codemie-caller-agent` (default port 11000).
+- **Check:** `curl -s -X POST http://localhost:11000/demo/chat -H "Content-Type: application/json" -d '{"message":"hello"}' | python3 -m json.tool`
 
 ### 4. How-To Guide Agent (`howto-guide-agent`) — incremental/streaming, official `a2a-sdk`
 
