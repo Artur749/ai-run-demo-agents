@@ -123,3 +123,33 @@ def test_extract_text_empty_falls_back_to_str():
     text = _extract_text(response)
     assert isinstance(text, str)
     assert len(text) > 0
+
+
+def _status_task(state, text):
+    return {"jsonrpc": "2.0", "id": "r1", "result": {"task": {
+        "id": "t1", "contextId": "c1",
+        "status": {"state": state, "message": {"role": "ROLE_AGENT", "parts": [{"text": text}]}},
+    }}}
+
+
+def test_extract_text_reads_status_message_when_there_is_no_artifact():
+    assert _extract_text(_status_task("TASK_STATE_FAILED", "boom")) == "boom"
+
+
+@respx.mock
+@pytest.mark.parametrize("state", ["TASK_STATE_FAILED", "TASK_STATE_REJECTED", "TASK_STATE_CANCELED"])
+async def test_call_failed_task_is_not_ok(state):
+    respx.post(ENDPOINT).mock(return_value=httpx.Response(200, json=_status_task(state, "LLM unavailable")))
+    result = await CodeMieCallerAgent(CM_BASE, CM_ID, CM_TOKEN).call("hi")
+    assert result.ok is False
+    assert state in result.error and "LLM unavailable" in result.error
+    assert result.trace[-1].payload["ok"] is False
+
+
+@respx.mock
+async def test_call_input_required_returns_the_agents_question():
+    respx.post(ENDPOINT).mock(return_value=httpx.Response(
+        200, json=_status_task("TASK_STATE_INPUT_REQUIRED", "Which city?")))
+    result = await CodeMieCallerAgent(CM_BASE, CM_ID, CM_TOKEN).call("weather")
+    assert result.ok is True
+    assert result.response == "Which city?"

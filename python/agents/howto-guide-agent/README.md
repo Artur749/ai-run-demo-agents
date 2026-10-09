@@ -54,7 +54,7 @@ hanging.
    uv run .
 
    # On custom host/port
-   uv run . --host 0.0.0.0 --port 8080
+   uv run . --host 127.0.0.1 --port 8080
    ```
 
 4. With Docker:
@@ -63,9 +63,14 @@ hanging.
    # Build docker image
    docker buildx build --build-context ai-run-agents=/path/to/ai-run-demo-agents/python/ -t howto-guide-agent:latest .
 
-   # Run docker container
-   docker run -it -p 10900:10900 -v ./.env:/app/agents/howto-guide-agent/.env howto-guide-agent:latest
+   # Run docker container on the same Docker network as CodeMie.
+   # --host is advertised in the Agent Card, so it must be the name CodeMie can reach this container by.
+   docker run -it --name howto-guide-agent --network <codemie-network> -p 10900:10900 \
+     -v ./.env:/app/agents/howto-guide-agent/.env \
+     howto-guide-agent:latest --host howto-guide-agent --port 10900
    ```
+
+   Do not use `--host 0.0.0.0`: the Agent Card would advertise `http://0.0.0.0:10900/`, which CodeMie cannot call.
 
 ## Testing
 

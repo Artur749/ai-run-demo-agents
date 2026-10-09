@@ -25,4 +25,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["uv", "run", ".", "--host", "0.0.0.0", "--port", "10800"]
+# The Agent Card advertises --host, so pass the container name it is reachable by at run time:
+#   docker run --name text-insights-agent --network <network> ... text-insights-agent:latest --host text-insights-agent --port 10800
+ENTRYPOINT ["uv", "run", "."]
+CMD ["--port", "10800"]

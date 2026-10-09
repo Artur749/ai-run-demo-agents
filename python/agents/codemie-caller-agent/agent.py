@@ -122,6 +122,18 @@ class CodeMieCallerAgent:
             return CallResult(ok=False, response="", trace=trace, error=error_msg)
 
         response_text = _extract_text(response_json)
+        failed_state = _failed_task_state(response_json)
+        if failed_state:
+            error_msg = f"CodeMie task {failed_state}: {response_text}"
+            trace.append(TraceStep(
+                step=4,
+                label="codemie-caller-agent → UI",
+                direction="inbound",
+                protocol="HTTP response",
+                payload={"ok": False, "error": error_msg},
+            ))
+            return CallResult(ok=False, response="", trace=trace, error=error_msg)
+
         trace.append(TraceStep(
             step=4,
             label="codemie-caller-agent → UI",
@@ -132,16 +144,30 @@ class CodeMieCallerAgent:
         return CallResult(ok=True, response=response_text, trace=trace)
 
 
+_FAILED_TASK_STATES = ("TASK_STATE_FAILED", "TASK_STATE_REJECTED", "TASK_STATE_CANCELED")
+
+
+def _first_text(message: dict[str, Any]) -> str | None:
+    parts = message.get("parts", [])
+    return parts[0].get("text", "") if parts else None
+
+
+def _failed_task_state(response_json: dict[str, Any]) -> str | None:
+    state = response_json.get("result", {}).get("task", {}).get("status", {}).get("state")
+    return state if state in _FAILED_TASK_STATES else None
+
+
 def _extract_text(response_json: dict[str, Any]) -> str:
+    """The answer text: a completed task keeps it in an artifact, a failed or input-required one in status.message."""
     result = response_json.get("result", {})
     task = result.get("task", {})
     artifacts = task.get("artifacts", [])
     if artifacts:
-        parts = artifacts[0].get("parts", [])
-        if parts:
-            return parts[0].get("text", "")
-    message = result.get("message", {})
-    parts = message.get("parts", [])
-    if parts:
-        return parts[0].get("text", "")
+        text = _first_text(artifacts[0])
+        if text is not None:
+            return text
+    for message in (task.get("status", {}).get("message", {}), result.get("message", {})):
+        text = _first_text(message)
+        if text is not None:
+            return text
     return str(result)

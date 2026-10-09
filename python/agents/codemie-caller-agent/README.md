@@ -65,8 +65,8 @@ happens inside CodeMie.
    # Default: localhost:11000
    uv run .
 
-   # Custom host/port (needed when running alongside CodeMie in Docker)
-   uv run . --host 0.0.0.0 --port 11000
+   # Custom host/port; --host is advertised in the Agent Card, so it must be reachable by CodeMie
+   uv run . --host 127.0.0.1 --port 11000
    ```
 
 4. With Docker (requires the `ai-run-agents` build context pointing at `python/`):
@@ -76,15 +76,16 @@ happens inside CodeMie.
      --build-context ai-run-agents=/path/to/ai-run-demo-agents/python/ \
      -t codemie-caller-agent:latest .
 
-   docker run -it -p 11000:11000 \
+   docker run -it --name codemie-caller-agent --network <codemie-network> -p 11000:11000 \
      -e CM_BASE_URL=http://codemie:8080 \
      -e CM_ASSISTANT_ID=<your-assistant-id> \
      -e CM_AUTH_TOKEN=<your-token> \
-     codemie-caller-agent:latest
+     codemie-caller-agent:latest --host codemie-caller-agent --port 11000
    ```
 
    When CodeMie runs in Docker, pass the CodeMie container name as `CM_BASE_URL` and start this
-   agent on the same Docker network so the two containers can reach each other.
+   agent on the same Docker network so the two containers can reach each other. `--host` is advertised
+   in the Agent Card, so it must be this container's name; `0.0.0.0` would make the card unreachable.
 
 ## Endpoints
 
@@ -139,4 +140,4 @@ curl -s -X POST http://localhost:11000/demo/chat \
 
 - [A2A Protocol Documentation](https://a2a-protocol.org/)
 - [`a2a-sdk` on PyPI](https://pypi.org/project/a2a-sdk/)
-- [CodeMie A2A Integration Guide](https://github.com/epam-gen-ai-run/codemie/blob/main/docs/a2a-integration.md)
+- [CodeMie A2A Integration Guide](https://codemie-ai.github.io/docs/user-guide/tools_integrations/tools/a2a)
